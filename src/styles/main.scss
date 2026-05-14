@@ -334,6 +334,10 @@ dd {
   cursor: default;
 }
 
+.code-panel .cm-scroller {
+  overflow: auto;
+}
+
 .code-panel .cm-content {
   caret-color: transparent;
   user-select: none;
@@ -486,10 +490,14 @@ meter::-webkit-meter-optimum-value {
     flex-direction: column;
   }
 
-  .code-panel .cm-editor,
   .code-editor-form .cm-editor {
     font-size: 0.8rem;
     min-height: 320px !important;
+  }
+
+  .code-panel .cm-editor {
+    height: 320px !important;
+    font-size: 0.8rem;
   }
 
   .code-editor-form__actions {

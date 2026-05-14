@@ -23,8 +23,7 @@ export function CodeBlock({ title, code, language = 'TypeScript' }: CodeBlockPro
         basicSetup={codeMirrorBasicSetup}
         editable={false}
         readOnly
-        minHeight="430px"
-        maxHeight="540px"
+        height="430px"
       />
     </section>
   )
