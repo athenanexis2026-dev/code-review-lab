@@ -1,4 +1,5 @@
 import { CodeBlock } from '../components/CodeBlock'
+import { CodeEditorForm } from '../components/CodeEditorForm'
 import type { ReviewTask } from '../data/tasks'
 
 type TaskDetailProps = {
@@ -52,6 +53,8 @@ export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) 
         <CodeBlock title="Starter buggy implementation" code={task.buggyCode} />
         <CodeBlock title="Corrected reference implementation" code={task.fixedCode} />
       </section>
+
+      <CodeEditorForm initialCode={task.buggyCode} />
     </main>
   )
 }
