@@ -357,6 +357,71 @@ dd {
   background: #fff;
 }
 
+.code-test-summary {
+  padding: 16px 18px;
+  border-top: 1px solid #e0e8f0;
+  background: #f8fbfe;
+}
+
+.code-test-summary > strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #182435;
+}
+
+.code-test-summary p {
+  margin: 0;
+  color: #536273;
+}
+
+.code-test-summary ul {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.code-test-summary li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.code-test-summary li > span {
+  min-width: 48px;
+  color: #1f4f7a;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.code-test-summary li strong,
+.code-test-summary li small {
+  display: block;
+}
+
+.code-test-summary li small {
+  margin-top: 4px;
+  color: #66778a;
+}
+
+.code-test-summary--passed {
+  border-left: 4px solid #2f8f6b;
+}
+
+.code-test-summary--failed {
+  border-left: 4px solid #d06f3d;
+}
+
+.code-test-summary--empty,
+.code-test-summary--running {
+  border-left: 4px solid #1f4f7a;
+}
+
 .test-results {
   padding: 24px;
 }
