@@ -1,3 +1,6 @@
+import { javascript } from '@codemirror/lang-javascript'
+import { vscodeDark } from '@uiw/codemirror-theme-vscode'
+import CodeMirror from '@uiw/react-codemirror'
 import { useState, type FormEvent } from 'react'
 
 type CodeEditorFormProps = {
@@ -21,11 +24,21 @@ export function CodeEditorForm({ initialCode = '' }: CodeEditorFormProps) {
         <h3>Your solution</h3>
         <span>TypeScript</span>
       </div>
-      <textarea
+      <CodeMirror
         aria-label="TypeScript solution editor"
         value={code}
-        onChange={(event) => setCode(event.target.value)}
-        spellCheck={false}
+        theme={vscodeDark}
+        extensions={[javascript({ typescript: true })]}
+        basicSetup={{
+          bracketMatching: true,
+          closeBrackets: true,
+          foldGutter: false,
+          highlightActiveLine: true,
+          highlightActiveLineGutter: true,
+          lineNumbers: true,
+        }}
+        minHeight="430px"
+        onChange={(value) => setCode(value)}
       />
       <div className="code-editor-form__actions">
         <button type="button" className="secondary" onClick={runTests}>
