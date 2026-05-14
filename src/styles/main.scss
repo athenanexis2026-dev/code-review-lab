@@ -319,6 +319,25 @@ dd {
   font-size: 0.95rem;
 }
 
+.code-panel__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.code-panel__copy-button {
+  min-height: 30px;
+  border: 1px solid #45617f;
+  padding: 0 10px;
+  background: #22344b;
+  color: #dbeafe;
+  font-size: 0.76rem;
+}
+
+.code-panel__copy-button:hover {
+  background: #2b4562;
+}
+
 .code-panel .cm-editor,
 .code-editor-form .cm-editor {
   font-size: 0.88rem;
@@ -341,6 +360,14 @@ dd {
 .code-panel .cm-content {
   caret-color: transparent;
   user-select: none;
+}
+
+.code-panel--copyable .cm-editor {
+  cursor: text;
+}
+
+.code-panel--copyable .cm-content {
+  user-select: text;
 }
 
 .code-editor-form .cm-focused {

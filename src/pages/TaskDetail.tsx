@@ -52,7 +52,11 @@ export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) 
 
       <section className="code-grid">
         <CodeBlock title="Starter buggy implementation" code={task.buggyCode} />
-        <CodeBlock title="Corrected reference implementation" code={task.fixedCode} />
+        <CodeBlock
+          title="Corrected reference implementation"
+          code={task.fixedCode}
+          allowCopy
+        />
       </section>
 
       <CodeEditorForm
