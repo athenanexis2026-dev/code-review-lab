@@ -1,9 +1,19 @@
-export type CodeTestCase = {
+type UserCodeExports = Record<string, unknown>
+
+export type FunctionCodeTestCase = {
   name: string
   functionName: string
   args: unknown[]
-  expected: unknown
+  expected?: unknown
+  expectError?: boolean
 }
+
+export type AssertionCodeTestCase = {
+  name: string
+  assert: (exports: UserCodeExports) => void
+}
+
+export type CodeTestCase = FunctionCodeTestCase | AssertionCodeTestCase
 
 export type CodeTestCaseResult = {
   name: string
@@ -30,7 +40,7 @@ const isEqual = (actual: unknown, expected: unknown) => {
 }
 
 const getExportedFunction = (
-  exports: Record<string, unknown>,
+  exports: UserCodeExports,
   functionName: string,
 ) => {
   const exportedFunction = exports[functionName]
@@ -79,6 +89,64 @@ const getCodeExports = async (code: string) => {
   return moduleObject.exports
 }
 
+const isAssertionTestCase = (
+  testCase: CodeTestCase,
+): testCase is AssertionCodeTestCase => {
+  return 'assert' in testCase
+}
+
+const runTestCase = (
+  exports: UserCodeExports,
+  testCase: CodeTestCase,
+): CodeTestCaseResult => {
+  try {
+    if (isAssertionTestCase(testCase)) {
+      testCase.assert(exports)
+
+      return {
+        name: testCase.name,
+        passed: true,
+      }
+    }
+
+    const exportedFunction = getExportedFunction(exports, testCase.functionName)
+    const actual = exportedFunction(...testCase.args)
+
+    if (testCase.expectError) {
+      return {
+        name: testCase.name,
+        passed: false,
+        expected: 'an error to be thrown',
+        actual,
+      }
+    }
+
+    const passed = isEqual(actual, testCase.expected)
+
+    return {
+      name: testCase.name,
+      passed,
+      expected: testCase.expected,
+      actual,
+    }
+  } catch (error) {
+    if (!isAssertionTestCase(testCase) && testCase.expectError) {
+      return {
+        name: testCase.name,
+        passed: true,
+        expected: 'an error to be thrown',
+        actual: getErrorMessage(error),
+      }
+    }
+
+    return {
+      name: testCase.name,
+      passed: false,
+      error: getErrorMessage(error),
+    }
+  }
+}
+
 export const runCodeTests = async (
   code: string,
   testCases: CodeTestCase[],
@@ -94,26 +162,7 @@ export const runCodeTests = async (
   }
 
   const exports = await getCodeExports(code)
-  const cases = testCases.map((testCase) => {
-    try {
-      const exportedFunction = getExportedFunction(exports, testCase.functionName)
-      const actual = exportedFunction(...testCase.args)
-      const passed = isEqual(actual, testCase.expected)
-
-      return {
-        name: testCase.name,
-        passed,
-        expected: testCase.expected,
-        actual,
-      }
-    } catch (error) {
-      return {
-        name: testCase.name,
-        passed: false,
-        error: getErrorMessage(error),
-      }
-    }
-  })
+  const cases = testCases.map((testCase) => runTestCase(exports, testCase))
   const passed = cases.filter((testCase) => testCase.passed).length
   const failed = cases.length - passed
 

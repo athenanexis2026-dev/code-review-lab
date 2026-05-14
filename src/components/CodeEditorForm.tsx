@@ -68,8 +68,13 @@ export function CodeEditorForm({
         onChange={(value) => setCode(value)}
       />
       <div className="code-editor-form__actions">
-        <button type="button" className="secondary" onClick={runTests}>
-          Run tests
+        <button
+          type="button"
+          className="secondary"
+          onClick={runTests}
+          disabled={isRunningTests}
+        >
+          {isRunningTests ? 'Running...' : 'Run tests'}
         </button>
         <button type="submit">Submit</button>
       </div>

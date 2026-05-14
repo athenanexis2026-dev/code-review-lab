@@ -1,6 +1,7 @@
 import { CodeBlock } from '../components/CodeBlock'
 import { CodeEditorForm } from '../components/CodeEditorForm'
 import type { ReviewTask } from '../data/tasks'
+import { taskTestsById } from '../tests/taskTests'
 
 type TaskDetailProps = {
   task: ReviewTask
@@ -54,7 +55,11 @@ export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) 
         <CodeBlock title="Corrected reference implementation" code={task.fixedCode} />
       </section>
 
-      <CodeEditorForm initialCode={task.buggyCode} />
+      <CodeEditorForm
+        key={task.id}
+        initialCode={task.buggyCode}
+        testCases={taskTestsById[task.id] ?? []}
+      />
     </main>
   )
 }
