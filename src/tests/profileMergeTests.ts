@@ -64,7 +64,7 @@ export const profileMergeTests: CodeTestCase[] = [
   },
   {
     name: 'Does not mutate the saved profile object',
-    assert: (exports) => {
+    assert: (exports, expect) => {
       const mergeProfile = exports.mergeProfile
 
       if (typeof mergeProfile !== 'function') {
@@ -83,9 +83,7 @@ export const profileMergeTests: CodeTestCase[] = [
 
       mergeProfile(original, { preferences: { sms: true } })
 
-      if (JSON.stringify(original) !== before) {
-        throw new Error('mergeProfile mutated the saved profile.')
-      }
+      expect(JSON.stringify(original)).toEqual(before)
     },
   },
 ]

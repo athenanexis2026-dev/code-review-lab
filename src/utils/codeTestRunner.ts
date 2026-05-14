@@ -1,4 +1,10 @@
+import { equals } from '@jest/expect-utils'
+
 type UserCodeExports = Record<string, unknown>
+type TestExpect = (actual: unknown) => {
+  toEqual: (expected: unknown) => void
+  toThrow: () => void
+}
 
 export type FunctionCodeTestCase = {
   name: string
@@ -10,7 +16,7 @@ export type FunctionCodeTestCase = {
 
 export type AssertionCodeTestCase = {
   name: string
-  assert: (exports: UserCodeExports) => void
+  assert: (exports: UserCodeExports, expect: TestExpect) => void
 }
 
 export type CodeTestCase = FunctionCodeTestCase | AssertionCodeTestCase
@@ -35,8 +41,39 @@ const getErrorMessage = (error: unknown) => {
   return error instanceof Error ? error.message : String(error)
 }
 
-const isEqual = (actual: unknown, expected: unknown) => {
-  return JSON.stringify(actual) === JSON.stringify(expected)
+const formatValue = (value: unknown) => {
+  if (typeof value === 'undefined') return 'undefined'
+
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return String(value)
+  }
+}
+
+const jestExpect: TestExpect = (actual) => {
+  return {
+    toEqual: (expected) => {
+      if (!equals(actual, expected)) {
+        throw new Error(
+          `Expected ${formatValue(actual)} to equal ${formatValue(expected)}.`,
+        )
+      }
+    },
+    toThrow: () => {
+      if (typeof actual !== 'function') {
+        throw new Error('Expected received value to be a function.')
+      }
+
+      try {
+        actual()
+      } catch {
+        return
+      }
+
+      throw new Error('Expected function to throw.')
+    },
+  }
 }
 
 const getExportedFunction = (
@@ -101,7 +138,7 @@ const runTestCase = (
 ): CodeTestCaseResult => {
   try {
     if (isAssertionTestCase(testCase)) {
-      testCase.assert(exports)
+      testCase.assert(exports, jestExpect)
 
       return {
         name: testCase.name,
@@ -110,35 +147,47 @@ const runTestCase = (
     }
 
     const exportedFunction = getExportedFunction(exports, testCase.functionName)
-    const actual = exportedFunction(...testCase.args)
 
     if (testCase.expectError) {
-      return {
-        name: testCase.name,
-        passed: false,
-        expected: 'an error to be thrown',
-        actual,
+      try {
+        jestExpect(() => exportedFunction(...testCase.args)).toThrow()
+      } catch (error) {
+        return {
+          name: testCase.name,
+          passed: false,
+          expected: 'an error to be thrown',
+          error: getErrorMessage(error),
+        }
       }
-    }
 
-    const passed = isEqual(actual, testCase.expected)
-
-    return {
-      name: testCase.name,
-      passed,
-      expected: testCase.expected,
-      actual,
-    }
-  } catch (error) {
-    if (!isAssertionTestCase(testCase) && testCase.expectError) {
       return {
         name: testCase.name,
         passed: true,
         expected: 'an error to be thrown',
-        actual: getErrorMessage(error),
       }
     }
 
+    const actual = exportedFunction(...testCase.args)
+
+    try {
+      jestExpect(actual).toEqual(testCase.expected)
+    } catch (error) {
+      return {
+        name: testCase.name,
+        passed: false,
+        expected: testCase.expected,
+        actual,
+        error: getErrorMessage(error),
+      }
+    }
+
+    return {
+      name: testCase.name,
+      passed: true,
+      expected: testCase.expected,
+      actual,
+    }
+  } catch (error) {
     return {
       name: testCase.name,
       passed: false,
