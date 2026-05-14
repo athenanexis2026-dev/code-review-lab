@@ -1,5 +1,6 @@
 import { DashboardCard } from '../components/DashboardCard'
 import type { ReviewTask } from '../data/tasks'
+import { useTaskStats } from '../state/taskStatsContext'
 import { getRubricAverage } from '../utils/rubric'
 
 type DashboardProps = {
@@ -15,6 +16,7 @@ function getReviewStatus(score: number) {
 }
 
 export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProps) {
+  const taskStats = useTaskStats()
   const averageScore = Math.round(
     tasks.reduce((sum, task) => sum + getRubricAverage(task.rubric), 0) / tasks.length,
   )
@@ -46,7 +48,24 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
       </section>
 
       <section className="metrics-grid" aria-label="Dashboard metrics">
-        <DashboardCard label="Total tasks" value={tasks.length} detail="Curated SWE scenarios" />
+        <DashboardCard label="Tasks" value={taskStats.tasks} detail="Curated SWE scenarios" />
+        <DashboardCard
+          label="Completed tasks"
+          value={taskStats.completedTasks}
+          detail="Submitted evaluations"
+        />
+        <DashboardCard
+          label="Passed tasks"
+          value={taskStats.passedTasks}
+          detail="Accepted task runs"
+          tone="success"
+        />
+        <DashboardCard
+          label="Failed tasks"
+          value={taskStats.failedTasks}
+          detail="Needs another review"
+          tone="warning"
+        />
         <DashboardCard
           label="Average quality"
           value={`${averageScore}%`}
@@ -67,7 +86,7 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
         />
         <DashboardCard
           label="Review status"
-          value={`${reviewReadyCount}/${tasks.length}`}
+          value={`${reviewReadyCount}/${taskStats.tasks}`}
           detail="Reference-ready tasks"
         />
       </section>
@@ -78,7 +97,7 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
             <p className="eyebrow">Task library</p>
             <h2>Evaluation scenarios</h2>
           </div>
-          <span>{tasks.length} active tasks</span>
+          <span>{taskStats.tasks} active tasks</span>
         </div>
 
         <div className="task-list">
