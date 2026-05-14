@@ -1,7 +1,7 @@
-import { javascript } from '@codemirror/lang-javascript'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import CodeMirror from '@uiw/react-codemirror'
 import { useState, type FormEvent } from 'react'
+import { codeMirrorBasicSetup, typeScriptExtensions } from './codeMirrorConfig'
 
 type CodeEditorFormProps = {
   initialCode?: string
@@ -28,15 +28,8 @@ export function CodeEditorForm({ initialCode = '' }: CodeEditorFormProps) {
         aria-label="TypeScript solution editor"
         value={code}
         theme={vscodeDark}
-        extensions={[javascript({ typescript: true })]}
-        basicSetup={{
-          bracketMatching: true,
-          closeBrackets: true,
-          foldGutter: false,
-          highlightActiveLine: true,
-          highlightActiveLineGutter: true,
-          lineNumbers: true,
-        }}
+        extensions={typeScriptExtensions}
+        basicSetup={codeMirrorBasicSetup}
         minHeight="430px"
         onChange={(value) => setCode(value)}
       />
