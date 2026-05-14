@@ -1,3 +1,7 @@
+import { vscodeDark } from '@uiw/codemirror-theme-vscode'
+import CodeMirror from '@uiw/react-codemirror'
+import { codeMirrorBasicSetup, typeScriptExtensions } from './codeMirrorConfig'
+
 type CodeBlockProps = {
   title: string
   code: string
@@ -11,9 +15,17 @@ export function CodeBlock({ title, code, language = 'TypeScript' }: CodeBlockPro
         <h3>{title}</h3>
         <span>{language}</span>
       </div>
-      <pre>
-        <code>{code}</code>
-      </pre>
+      <CodeMirror
+        aria-label={`${title} read-only code`}
+        value={code}
+        theme={vscodeDark}
+        extensions={typeScriptExtensions}
+        basicSetup={codeMirrorBasicSetup}
+        editable={false}
+        readOnly
+        minHeight="430px"
+        maxHeight="540px"
+      />
     </section>
   )
 }

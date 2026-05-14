@@ -319,25 +319,24 @@ dd {
   font-size: 0.95rem;
 }
 
-.code-panel pre {
-  min-height: 430px;
-  max-height: 540px;
-  margin: 0;
-  overflow: auto;
-  padding: 20px;
-  background: #111827;
-  color: #dbeafe;
-  font-size: 0.88rem;
-  line-height: 1.6;
-}
-
+.code-panel .cm-editor,
 .code-editor-form .cm-editor {
   font-size: 0.88rem;
 }
 
+.code-panel .cm-scroller,
 .code-editor-form .cm-scroller {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   line-height: 1.6;
+}
+
+.code-panel .cm-editor {
+  cursor: default;
+}
+
+.code-panel .cm-content {
+  caret-color: transparent;
+  user-select: none;
 }
 
 .code-editor-form .cm-focused {
@@ -487,11 +486,7 @@ meter::-webkit-meter-optimum-value {
     flex-direction: column;
   }
 
-  .code-panel pre {
-    min-height: 320px;
-    font-size: 0.8rem;
-  }
-
+  .code-panel .cm-editor,
   .code-editor-form .cm-editor {
     font-size: 0.8rem;
     min-height: 320px !important;
