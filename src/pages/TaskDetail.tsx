@@ -7,10 +7,9 @@ import { taskTestsById } from '../tests/taskTests'
 type TaskDetailProps = {
   task: ReviewTask
   onBack: () => void
-  onOpenEvaluation: () => void
 }
 
-export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) {
+export function TaskDetail({ task, onBack }: TaskDetailProps) {
   const [revealedReferenceTaskId, setRevealedReferenceTaskId] = useState<
     string | null
   >(null)
@@ -31,9 +30,6 @@ export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) 
         <aside className="status-panel">
           <span>{task.difficulty}</span>
           <strong>{task.testResults.failed} failure modes</strong>
-          <button type="button" onClick={onOpenEvaluation}>
-            Open evaluation
-          </button>
         </aside>
       </section>
 

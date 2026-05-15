@@ -7,7 +7,6 @@ import { getRubricAverage } from '../utils/rubric'
 type DashboardProps = {
   tasks: ReviewTask[]
   onOpenTask: (taskId: string) => void
-  onOpenEvaluation: (taskId: string) => void
 }
 
 function getReviewStatus(score: number) {
@@ -16,7 +15,7 @@ function getReviewStatus(score: number) {
   return 'Needs revision'
 }
 
-export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProps) {
+export function Dashboard({ tasks, onOpenTask }: DashboardProps) {
   const taskStats = useTaskStats()
 
   return (
@@ -107,13 +106,6 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
                 <div className="row-actions">
                   <button type="button" onClick={() => onOpenTask(task.id)}>
                     View task
-                  </button>
-                  <button
-                    type="button"
-                    className="secondary"
-                    onClick={() => onOpenEvaluation(task.id)}
-                  >
-                    Evaluation
                   </button>
                 </div>
               </article>

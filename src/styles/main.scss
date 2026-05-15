@@ -294,8 +294,7 @@ dd {
 }
 
 .detail-grid,
-.code-grid,
-.evaluation-grid {
+.code-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
@@ -574,7 +573,6 @@ meter::-webkit-meter-optimum-value {
   .detail-header,
   .detail-grid,
   .code-grid,
-  .evaluation-grid,
   .task-row {
     grid-template-columns: 1fr;
   }

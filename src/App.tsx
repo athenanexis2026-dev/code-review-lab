@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react'
 import { tasks } from './data/tasks'
 import { Dashboard } from './pages/Dashboard'
-import { Evaluation } from './pages/Evaluation'
 import { TaskDetail } from './pages/TaskDetail'
 
-type View = 'dashboard' | 'task' | 'evaluation'
+type View = 'dashboard' | 'task'
 
 function App() {
   const [view, setView] = useState<View>('dashboard')
@@ -21,28 +20,11 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const openEvaluation = (taskId: string) => {
-    setSelectedTaskId(taskId)
-    setView('evaluation')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   if (view === 'task') {
     return (
       <TaskDetail
         task={selectedTask}
         onBack={() => setView('dashboard')}
-        onOpenEvaluation={() => setView('evaluation')}
-      />
-    )
-  }
-
-  if (view === 'evaluation') {
-    return (
-      <Evaluation
-        task={selectedTask}
-        onBack={() => setView('dashboard')}
-        onOpenTask={() => setView('task')}
       />
     )
   }
@@ -51,7 +33,6 @@ function App() {
     <Dashboard
       tasks={tasks}
       onOpenTask={openTask}
-      onOpenEvaluation={openEvaluation}
     />
   )
 }
