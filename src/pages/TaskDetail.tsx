@@ -1,19 +1,30 @@
 import { useState } from 'react'
 import { CodeBlock } from '../components/CodeBlock'
-import { CodeEditorForm } from '../components/CodeEditorForm'
+import {
+  CodeEditorForm,
+  type CodeEditorSubmission,
+} from '../components/CodeEditorForm'
 import type { ReviewTask } from '../data/tasks'
 import { taskTestsById } from '../tests/taskTests'
 
 type TaskDetailProps = {
   task: ReviewTask
+  savedSubmission?: CodeEditorSubmission | null
   onBack: () => void
+  onSubmitComplete: (taskId: string, submission: CodeEditorSubmission) => void
 }
 
-export function TaskDetail({ task, onBack }: TaskDetailProps) {
+export function TaskDetail({
+  task,
+  savedSubmission,
+  onBack,
+  onSubmitComplete,
+}: TaskDetailProps) {
   const [revealedReferenceTaskId, setRevealedReferenceTaskId] = useState<
     string | null
   >(null)
-  const showReferenceImplementation = revealedReferenceTaskId === task.id
+  const showReferenceImplementation =
+    revealedReferenceTaskId === task.id || Boolean(savedSubmission)
 
   return (
     <main className="page-shell">
@@ -61,7 +72,11 @@ export function TaskDetail({ task, onBack }: TaskDetailProps) {
         initialCode={task.buggyCode}
         taskId={task.id}
         testCases={taskTestsById[task.id] ?? []}
-        onSubmitComplete={() => setRevealedReferenceTaskId(task.id)}
+        savedSubmission={savedSubmission}
+        onSubmitComplete={(submission) => {
+          setRevealedReferenceTaskId(task.id)
+          onSubmitComplete(task.id, submission)
+        }}
       />
 
       {showReferenceImplementation && (

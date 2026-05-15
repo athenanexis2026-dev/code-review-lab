@@ -10,22 +10,32 @@ import {
 } from '../utils/codeTestRunner'
 import { useTaskStats } from '../state/taskStatsContext'
 
+export type CodeEditorSubmission = {
+  code: string
+  result: CodeTestRunResult
+  submittedAt: string
+}
+
 type CodeEditorFormProps = {
   initialCode?: string
   taskId: string
   testCases?: CodeTestCase[]
-  onSubmitComplete?: () => void
+  savedSubmission?: CodeEditorSubmission | null
+  onSubmitComplete?: (submission: CodeEditorSubmission) => void
 }
 
 export function CodeEditorForm({
   initialCode = '',
   taskId,
   testCases = [],
+  savedSubmission,
   onSubmitComplete,
 }: CodeEditorFormProps) {
   const { setTaskStats } = useTaskStats()
-  const [code, setCode] = useState(initialCode)
-  const [testResult, setTestResult] = useState<CodeTestRunResult | null>(null)
+  const [code, setCode] = useState(savedSubmission?.code ?? initialCode)
+  const [testResult, setTestResult] = useState<CodeTestRunResult | null>(
+    savedSubmission?.result ?? null,
+  )
   const [isRunningTests, setIsRunningTests] = useState(false)
   const testSummaryRef = useRef<HTMLDivElement>(null)
 
@@ -105,9 +115,14 @@ export function CodeEditorForm({
   const submitCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const result = await runTests()
+    const submission = {
+      code,
+      result,
+      submittedAt: new Date().toISOString(),
+    }
 
     registerSubmittedResult(result)
-    onSubmitComplete?.()
+    onSubmitComplete?.(submission)
     scrollToTestSummary()
   }
 
