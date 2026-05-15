@@ -1,4 +1,5 @@
 import { DashboardCard } from '../components/DashboardCard'
+import heroImage from '../assets/RafaSoftwareReview (1).png'
 import type { ReviewTask } from '../data/tasks'
 import { useTaskStats } from '../state/taskStatsContext'
 import { getRubricAverage } from '../utils/rubric'
@@ -29,10 +30,8 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
             realistic tasks, tests, edge cases, fixes, and scoring rubrics.
           </p>
         </div>
-        <aside>
-          <span>Portfolio signal</span>
-          <strong>Debugging + evaluation</strong>
-          <p>Built for employer review with deployable mock data.</p>
+        <aside className="hero-band__media">
+          <img src={heroImage} alt="" />
         </aside>
       </section>
 

@@ -111,6 +111,11 @@ export function CodeEditorForm({
     scrollToTestSummary()
   }
 
+  const runTestsAndScroll = async () => {
+    await runTests()
+    scrollToTestSummary()
+  }
+
   return (
     <form className="code-editor-form" onSubmit={submitCode}>
       <div className="code-panel__header">
@@ -130,7 +135,7 @@ export function CodeEditorForm({
         <button
           type="button"
           className="secondary"
-          onClick={runTests}
+          onClick={runTestsAndScroll}
           disabled={isRunningTests}
         >
           {isRunningTests ? 'Running...' : 'Run tests'}

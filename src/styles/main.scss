@@ -88,6 +88,18 @@ button.secondary:hover,
   color: #fff;
 }
 
+.hero-band__media {
+  padding: 0;
+  overflow: hidden;
+}
+
+.hero-band__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .hero-band h1,
 .detail-header h1 {
   margin: 8px 0 12px;
