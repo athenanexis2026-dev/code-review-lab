@@ -274,6 +274,14 @@ dd {
   margin-bottom: 18px;
 }
 
+.code-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.revealed-reference {
+  margin-top: 18px;
+}
+
 .info-panel,
 .review-panel {
   padding: 24px;
@@ -382,6 +390,10 @@ dd {
   padding: 16px 18px;
   border-top: 1px solid #e0e8f0;
   background: #fff;
+}
+
+.code-test-summary-anchor {
+  scroll-margin-top: 24px;
 }
 
 .code-test-summary {

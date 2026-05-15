@@ -1,6 +1,6 @@
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import CodeMirror from '@uiw/react-codemirror'
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { codeMirrorBasicSetup, typeScriptExtensions } from './codeMirrorConfig'
 import { CodeTestSummary } from './CodeTestSummary'
 import {
@@ -12,15 +12,27 @@ import {
 type CodeEditorFormProps = {
   initialCode?: string
   testCases?: CodeTestCase[]
+  onSubmitComplete?: () => void
 }
 
 export function CodeEditorForm({
   initialCode = '',
   testCases = [],
+  onSubmitComplete,
 }: CodeEditorFormProps) {
   const [code, setCode] = useState(initialCode)
   const [testResult, setTestResult] = useState<CodeTestRunResult | null>(null)
   const [isRunningTests, setIsRunningTests] = useState(false)
+  const testSummaryRef = useRef<HTMLDivElement>(null)
+
+  const scrollToTestSummary = () => {
+    window.requestAnimationFrame(() => {
+      testSummaryRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    })
+  }
 
   const runTests = async () => {
     setIsRunningTests(true)
@@ -48,8 +60,11 @@ export function CodeEditorForm({
     }
   }
 
-  const submitCode = (event: FormEvent<HTMLFormElement>) => {
+  const submitCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    await runTests()
+    onSubmitComplete?.()
+    scrollToTestSummary()
   }
 
   return (
@@ -76,9 +91,13 @@ export function CodeEditorForm({
         >
           {isRunningTests ? 'Running...' : 'Run tests'}
         </button>
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={isRunningTests}>
+          Submit
+        </button>
       </div>
-      <CodeTestSummary result={testResult} isRunning={isRunningTests} />
+      <div className="code-test-summary-anchor" ref={testSummaryRef}>
+        <CodeTestSummary result={testResult} isRunning={isRunningTests} />
+      </div>
     </form>
   )
 }

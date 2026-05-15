@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { CodeBlock } from '../components/CodeBlock'
 import { CodeEditorForm } from '../components/CodeEditorForm'
 import type { ReviewTask } from '../data/tasks'
@@ -10,6 +11,11 @@ type TaskDetailProps = {
 }
 
 export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) {
+  const [revealedReferenceTaskId, setRevealedReferenceTaskId] = useState<
+    string | null
+  >(null)
+  const showReferenceImplementation = revealedReferenceTaskId === task.id
+
   return (
     <main className="page-shell">
       <button type="button" className="back-link" onClick={onBack}>
@@ -50,20 +56,26 @@ export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) 
         </article>
       </section>
 
-      <section className="code-grid">
+      <section className="code-grid code-grid--single">
         <CodeBlock title="Starter buggy implementation" code={task.buggyCode} />
-        <CodeBlock
-          title="Corrected reference implementation"
-          code={task.fixedCode}
-          allowCopy
-        />
       </section>
 
       <CodeEditorForm
         key={task.id}
         initialCode={task.buggyCode}
         testCases={taskTestsById[task.id] ?? []}
+        onSubmitComplete={() => setRevealedReferenceTaskId(task.id)}
       />
+
+      {showReferenceImplementation && (
+        <section className="revealed-reference">
+          <CodeBlock
+            title="Corrected reference implementation"
+            code={task.fixedCode}
+            allowCopy
+          />
+        </section>
+      )}
     </main>
   )
 }

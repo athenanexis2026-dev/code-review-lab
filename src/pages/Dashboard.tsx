@@ -17,17 +17,6 @@ function getReviewStatus(score: number) {
 
 export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProps) {
   const taskStats = useTaskStats()
-  const averageScore = Math.round(
-    tasks.reduce((sum, task) => sum + getRubricAverage(task.rubric), 0) / tasks.length,
-  )
-  const bugsIdentified = tasks.reduce(
-    (sum, task) => sum + task.testResults.failedCases.length,
-    0,
-  )
-  const testsPassed = tasks.reduce((sum, task) => sum + task.testResults.passed, 0)
-  const reviewReadyCount = tasks.filter(
-    (task) => getRubricAverage(task.rubric) >= 92,
-  ).length
 
   return (
     <main className="page-shell">
@@ -65,29 +54,6 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
           value={taskStats.failedTasks}
           detail="Needs another review"
           tone="warning"
-        />
-        <DashboardCard
-          label="Average quality"
-          value={`${averageScore}%`}
-          detail="Mean rubric score"
-          tone="success"
-        />
-        <DashboardCard
-          label="Bugs identified"
-          value={bugsIdentified}
-          detail="Captured failure modes"
-          tone="warning"
-        />
-        <DashboardCard
-          label="Tests passed"
-          value={testsPassed}
-          detail="Across validation suites"
-          tone="success"
-        />
-        <DashboardCard
-          label="Review status"
-          value={`${reviewReadyCount}/${taskStats.tasks}`}
-          detail="Reference-ready tasks"
         />
       </section>
 
