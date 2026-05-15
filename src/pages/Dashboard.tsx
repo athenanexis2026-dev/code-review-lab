@@ -2,17 +2,11 @@ import { DashboardCard } from '../components/DashboardCard'
 import heroImage from '../assets/RafaSoftwareReview (1).png'
 import type { ReviewTask } from '../data/tasks'
 import { useTaskStats } from '../state/taskStatsContext'
-import { getRubricAverage } from '../utils/rubric'
+import { taskTestsById } from '../tests/taskTests'
 
 type DashboardProps = {
   tasks: ReviewTask[]
   onOpenTask: (taskId: string) => void
-}
-
-function getReviewStatus(score: number) {
-  if (score >= 92) return 'Reference ready'
-  if (score >= 88) return 'Strong with notes'
-  return 'Needs revision'
 }
 
 export function Dashboard({ tasks, onOpenTask }: DashboardProps) {
@@ -72,8 +66,14 @@ export function Dashboard({ tasks, onOpenTask }: DashboardProps) {
 
         <div className="task-list">
           {tasks.map((task) => {
-            const score = getRubricAverage(task.rubric)
             const taskResult = taskStats.taskResultsById[task.id]
+            const totalTaskTests = taskTestsById[task.id]?.length ?? 0
+            const passedTaskTests =
+              taskStats.passedTestsByTaskId[task.id]?.length ?? 0
+            const score =
+              totalTaskTests > 0
+                ? Math.round((passedTaskTests / totalTaskTests) * 100)
+                : 0
 
             return (
               <article className="task-row" key={task.id}>
@@ -97,10 +97,6 @@ export function Dashboard({ tasks, onOpenTask }: DashboardProps) {
                   <div>
                     <dt>Score</dt>
                     <dd>{score}%</dd>
-                  </div>
-                  <div>
-                    <dt>Status</dt>
-                    <dd>{getReviewStatus(score)}</dd>
                   </div>
                 </dl>
                 <div className="row-actions">
