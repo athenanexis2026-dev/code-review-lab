@@ -63,6 +63,7 @@ export function TaskDetail({ task, onBack, onOpenEvaluation }: TaskDetailProps) 
       <CodeEditorForm
         key={task.id}
         initialCode={task.buggyCode}
+        taskId={task.id}
         testCases={taskTestsById[task.id] ?? []}
         onSubmitComplete={() => setRevealedReferenceTaskId(task.id)}
       />

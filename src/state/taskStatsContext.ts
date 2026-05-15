@@ -2,9 +2,13 @@ import { createContext, useContext, type Dispatch, type SetStateAction } from 'r
 
 export type TaskStatsState = {
   tasks: number
+  totalTests: number
+  passedTests: number
   completedTasks: number
   passedTasks: number
   failedTasks: number
+  taskResultsById: Record<string, 'passed' | 'failed'>
+  passedTestsByTaskId: Record<string, string[]>
 }
 
 export type TaskStatsContextValue = TaskStatsState & {
@@ -13,9 +17,13 @@ export type TaskStatsContextValue = TaskStatsState & {
 
 export const defaultTaskStats: TaskStatsState = {
   tasks: 5,
+  totalTests: 25,
+  passedTests: 0,
   completedTasks: 0,
   passedTasks: 0,
   failedTasks: 0,
+  taskResultsById: {},
+  passedTestsByTaskId: {},
 }
 
 export const TaskStatsContext = createContext<TaskStatsContextValue | undefined>(

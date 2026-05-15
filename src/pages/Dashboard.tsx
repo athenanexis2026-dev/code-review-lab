@@ -39,6 +39,12 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
       <section className="metrics-grid" aria-label="Dashboard metrics">
         <DashboardCard label="Tasks" value={taskStats.tasks} detail="Curated SWE scenarios" />
         <DashboardCard
+          label="Passed tests"
+          value={`${taskStats.passedTests}/${taskStats.totalTests}`}
+          detail="Across submitted tasks"
+          tone="success"
+        />
+        <DashboardCard
           label="Completed tasks"
           value={taskStats.completedTasks}
           detail="Submitted evaluations"
@@ -69,11 +75,19 @@ export function Dashboard({ tasks, onOpenTask, onOpenEvaluation }: DashboardProp
         <div className="task-list">
           {tasks.map((task) => {
             const score = getRubricAverage(task.rubric)
+            const taskResult = taskStats.taskResultsById[task.id]
 
             return (
               <article className="task-row" key={task.id}>
                 <div>
-                  <span className="pill">{task.category}</span>
+                  <div className="task-row__pills">
+                    <span className="pill">{task.category}</span>
+                    {taskResult && (
+                      <span className={`pill pill--${taskResult}`}>
+                        {taskResult === 'passed' ? 'Pass' : 'Failed'}
+                      </span>
+                    )}
+                  </div>
                   <h3>{task.title}</h3>
                   <p>{task.description}</p>
                 </div>

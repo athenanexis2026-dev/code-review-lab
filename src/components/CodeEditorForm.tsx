@@ -8,18 +8,22 @@ import {
   type CodeTestCase,
   type CodeTestRunResult,
 } from '../utils/codeTestRunner'
+import { useTaskStats } from '../state/taskStatsContext'
 
 type CodeEditorFormProps = {
   initialCode?: string
+  taskId: string
   testCases?: CodeTestCase[]
   onSubmitComplete?: () => void
 }
 
 export function CodeEditorForm({
   initialCode = '',
+  taskId,
   testCases = [],
   onSubmitComplete,
 }: CodeEditorFormProps) {
+  const { setTaskStats } = useTaskStats()
   const [code, setCode] = useState(initialCode)
   const [testResult, setTestResult] = useState<CodeTestRunResult | null>(null)
   const [isRunningTests, setIsRunningTests] = useState(false)
@@ -41,8 +45,9 @@ export function CodeEditorForm({
       const result = await runCodeTests(code, testCases)
 
       setTestResult(result)
+      return result
     } catch (error) {
-      setTestResult({
+      const failedResult: CodeTestRunResult = {
         status: 'failed',
         passed: 0,
         failed: 1,
@@ -54,15 +59,54 @@ export function CodeEditorForm({
             error: error instanceof Error ? error.message : String(error),
           },
         ],
-      })
+      }
+
+      setTestResult(failedResult)
+      return failedResult
     } finally {
       setIsRunningTests(false)
     }
   }
 
+  const registerSubmittedResult = (result: CodeTestRunResult) => {
+    setTaskStats((currentStats) => {
+      const submittedTaskResult: 'passed' | 'failed' =
+        result.status === 'passed' ? 'passed' : 'failed'
+      const taskResultsById = {
+        ...currentStats.taskResultsById,
+        [taskId]: submittedTaskResult,
+      }
+      const passedTestsByTaskId = {
+        ...currentStats.passedTestsByTaskId,
+        [taskId]: result.cases
+          .filter((testCase) => testCase.passed)
+          .map((testCase) => testCase.name),
+      }
+      const submittedResults = Object.values(taskResultsById)
+      const passedTests = Object.values(passedTestsByTaskId).reduce(
+        (total, taskPassedTests) => total + taskPassedTests.length,
+        0,
+      )
+
+      return {
+        ...currentStats,
+        passedTests,
+        completedTasks: submittedResults.length,
+        passedTasks: submittedResults.filter((taskResult) => taskResult === 'passed')
+          .length,
+        failedTasks: submittedResults.filter((taskResult) => taskResult === 'failed')
+          .length,
+        taskResultsById,
+        passedTestsByTaskId,
+      }
+    })
+  }
+
   const submitCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    await runTests()
+    const result = await runTests()
+
+    registerSubmittedResult(result)
     onSubmitComplete?.()
     scrollToTestSummary()
   }

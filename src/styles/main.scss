@@ -232,6 +232,12 @@ dt,
   line-height: 1.55;
 }
 
+.task-row__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .pill {
   display: inline-flex;
   width: fit-content;
@@ -241,6 +247,16 @@ dt,
   color: #1f4f7a;
   font-size: 0.76rem;
   font-weight: 800;
+}
+
+.pill--passed {
+  background: #e5f6ef;
+  color: #1f7558;
+}
+
+.pill--failed {
+  background: #fdebe4;
+  color: #a24622;
 }
 
 dl {
