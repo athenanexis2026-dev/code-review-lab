@@ -134,9 +134,7 @@ button.secondary:hover,
 .dashboard-card span,
 .eyebrow,
 dt,
-.code-panel__header span,
-.rubric-card__summary span,
-.test-results span {
+.code-panel__header span {
   color: #677789;
   font-size: 0.78rem;
   font-weight: 800;
@@ -193,10 +191,7 @@ dt,
 .task-table,
 .info-panel,
 .code-panel,
-.code-editor-form,
-.test-results,
-.rubric-card,
-.review-panel {
+.code-editor-form {
   border: 1px solid #d7e2ec;
   border-radius: 8px;
   background: #fff;
@@ -212,8 +207,7 @@ dt,
 }
 
 .section-heading h2,
-.info-panel h2,
-.review-panel h2 {
+.info-panel h2 {
   margin: 4px 0 0;
   color: #182435;
   font-size: 1.2rem;
@@ -340,23 +334,18 @@ dd {
   margin-top: 18px;
 }
 
-.info-panel,
-.review-panel {
+.info-panel {
   padding: 24px;
 }
 
-.info-panel ul,
-.review-panel ul,
-.issue-list ul {
+.info-panel ul {
   margin: 16px 0 0;
   padding-left: 20px;
   color: #4f5f73;
   line-height: 1.65;
 }
 
-.info-panel li,
-.review-panel li,
-.issue-list li {
+.info-panel li {
   margin-bottom: 8px;
 }
 
@@ -532,86 +521,6 @@ dd {
   border-left: 4px solid #1f4f7a;
 }
 
-.test-results {
-  padding: 24px;
-}
-
-.test-results__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.test-results__grid div {
-  padding: 16px;
-  border-radius: 8px;
-  background: #f3f7fb;
-}
-
-.test-results strong {
-  display: block;
-  margin-top: 8px;
-  color: #172337;
-  font-size: 1.6rem;
-}
-
-.issue-list h3 {
-  margin: 0;
-  color: #172337;
-  font-size: 1rem;
-}
-
-.rubric-card {
-  padding: 24px;
-}
-
-.rubric-card__summary {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 22px;
-}
-
-.rubric-card__summary strong {
-  color: #172337;
-  font-size: 3rem;
-  line-height: 1;
-}
-
-.rubric-list {
-  display: grid;
-  gap: 16px;
-}
-
-.rubric-row div {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 7px;
-}
-
-.rubric-row strong {
-  color: #172337;
-}
-
-meter {
-  width: 100%;
-  height: 12px;
-}
-
-meter::-webkit-meter-bar {
-  border: 0;
-  border-radius: 999px;
-  background: #e2e8f0;
-}
-
-meter::-webkit-meter-optimum-value {
-  border-radius: 999px;
-  background: #2f8f6b;
-}
-
 @media (max-width: 940px) {
   .hero-band,
   .detail-header,
@@ -640,15 +549,11 @@ meter::-webkit-meter-optimum-value {
   .detail-header > div,
   .hero-band aside,
   .status-panel,
-  .info-panel,
-  .review-panel,
-  .test-results,
-  .rubric-card {
+  .info-panel {
     padding: 18px;
   }
 
   .metrics-grid,
-  .test-results__grid,
   dl,
   .row-actions {
     grid-template-columns: 1fr;

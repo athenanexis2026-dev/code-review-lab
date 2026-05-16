@@ -1,4 +1,5 @@
 import { DashboardCard } from '../components/DashboardCard'
+import { DashboardTaskRow } from '../components/DashboardTaskRow'
 import heroImage from '../assets/RafaSoftwareReview (1).png'
 import type { ReviewTask } from '../data/tasks'
 import { useTaskStats } from '../state/taskStatsContext'
@@ -10,7 +11,7 @@ type DashboardProps = {
   onReset: () => void
 }
 
-export function Dashboard({ tasks, onOpenTask, onReset }: DashboardProps) {
+export const Dashboard = ({ tasks, onOpenTask, onReset }: DashboardProps) => {
   const taskStats = useTaskStats()
 
   return (
@@ -21,7 +22,7 @@ export function Dashboard({ tasks, onOpenTask, onReset }: DashboardProps) {
           <h1>CodeReview Lab</h1>
           <p>
             A lightweight software engineering evaluation dashboard for reviewing
-            realistic tasks, tests, edge cases, fixes, and scoring rubrics.
+            realistic tasks, tests, edge cases, and fixes.
           </p>
         </div>
         <aside className="hero-band__media">
@@ -83,48 +84,16 @@ export function Dashboard({ tasks, onOpenTask, onReset }: DashboardProps) {
         </div>
 
         <div className="task-list">
-          {tasks.map((task) => {
-            const taskResult = taskStats.taskResultsById[task.id]
-            const totalTaskTests = taskTestsById[task.id]?.length ?? 0
-            const passedTaskTests =
-              taskStats.passedTestsByTaskId[task.id]?.length ?? 0
-            const score =
-              totalTaskTests > 0
-                ? Math.round((passedTaskTests / totalTaskTests) * 100)
-                : 0
-
-            return (
-              <article className="task-row" key={task.id}>
-                <div>
-                  <div className="task-row__pills">
-                    <span className="pill">{task.category}</span>
-                    {taskResult && (
-                      <span className={`pill pill--${taskResult}`}>
-                        {taskResult === 'passed' ? 'Pass' : 'Failed'}
-                      </span>
-                    )}
-                  </div>
-                  <h3>{task.title}</h3>
-                  <p>{task.description}</p>
-                </div>
-                <dl>
-                  <div>
-                    <dt>Difficulty</dt>
-                    <dd>{task.difficulty}</dd>
-                  </div>
-                  <div>
-                    <dt>Score</dt>
-                    <dd>{score}%</dd>
-                  </div>
-                </dl>
-                <div className="row-actions">
-                  <button type="button" onClick={() => onOpenTask(task.id)}>
-                    View task
-                  </button>
-                </div>
-              </article>
-            )
-          })}
+          {tasks.map((task) => (
+            <DashboardTaskRow
+              key={task.id}
+              task={task}
+              taskResult={taskStats.taskResultsById[task.id]}
+              passedTests={taskStats.passedTestsByTaskId[task.id]?.length ?? 0}
+              totalTests={taskTestsById[task.id]?.length ?? 0}
+              onOpenTask={onOpenTask}
+            />
+          ))}
         </div>
       </section>
     </main>
