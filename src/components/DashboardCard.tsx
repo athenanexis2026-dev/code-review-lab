@@ -1,18 +1,22 @@
+type DashboardCardTone = 'neutral' | 'success' | 'warning'
+
 type DashboardCardProps = {
   label: string
   value: string | number
   detail: string
-  tone?: 'neutral' | 'success' | 'warning'
+  tone?: DashboardCardTone
 }
 
-export function DashboardCard({
+export const DashboardCard = ({
   label,
   value,
   detail,
   tone = 'neutral',
-}: DashboardCardProps) {
+}: DashboardCardProps) => {
+  const cardClassName = `dashboard-card dashboard-card--${tone}`
+
   return (
-    <article className={`dashboard-card dashboard-card--${tone}`}>
+    <article className={cardClassName}>
       <span>{label}</span>
       <strong>{value}</strong>
       <p>{detail}</p>
