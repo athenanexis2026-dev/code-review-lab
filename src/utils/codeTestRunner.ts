@@ -1,6 +1,9 @@
 import { equals } from '@jest/expect-utils'
 
 type UserCodeExports = Record<string, unknown>
+type ExportedTestFunction = (...args: unknown[]) => unknown
+type CodeTestRunStatus = 'passed' | 'failed' | 'empty'
+
 type TestExpect = (actual: unknown) => {
   toEqual: (expected: unknown) => void
   toThrow: () => void
@@ -30,7 +33,7 @@ export type CodeTestCaseResult = {
 }
 
 export type CodeTestRunResult = {
-  status: 'passed' | 'failed' | 'empty'
+  status: CodeTestRunStatus
   passed: number
   failed: number
   total: number
@@ -86,7 +89,7 @@ const getExportedFunction = (
     throw new Error(`Expected the code to export ${functionName}.`)
   }
 
-  return exportedFunction
+  return exportedFunction as ExportedTestFunction
 }
 
 const compileTypeScript = async (code: string) => {
@@ -132,61 +135,89 @@ const isAssertionTestCase = (
   return 'assert' in testCase
 }
 
+const runAssertionTestCase = (
+  exports: UserCodeExports,
+  testCase: AssertionCodeTestCase,
+): CodeTestCaseResult => {
+  testCase.assert(exports, jestExpect)
+
+  return {
+    name: testCase.name,
+    passed: true,
+  }
+}
+
+const runExpectedErrorTestCase = (
+  exportedFunction: ExportedTestFunction,
+  testCase: FunctionCodeTestCase,
+): CodeTestCaseResult => {
+  try {
+    jestExpect(() => exportedFunction(...testCase.args)).toThrow()
+  } catch (error) {
+    return {
+      name: testCase.name,
+      passed: false,
+      expected: 'an error to be thrown',
+      error: getErrorMessage(error),
+    }
+  }
+
+  return {
+    name: testCase.name,
+    passed: true,
+    expected: 'an error to be thrown',
+  }
+}
+
+const runExpectedValueTestCase = (
+  exportedFunction: ExportedTestFunction,
+  testCase: FunctionCodeTestCase,
+): CodeTestCaseResult => {
+  const actual = exportedFunction(...testCase.args)
+
+  try {
+    jestExpect(actual).toEqual(testCase.expected)
+  } catch (error) {
+    return {
+      name: testCase.name,
+      passed: false,
+      expected: testCase.expected,
+      actual,
+      error: getErrorMessage(error),
+    }
+  }
+
+  return {
+    name: testCase.name,
+    passed: true,
+    expected: testCase.expected,
+    actual,
+  }
+}
+
+const runFunctionTestCase = (
+  exports: UserCodeExports,
+  testCase: FunctionCodeTestCase,
+): CodeTestCaseResult => {
+  const exportedFunction = getExportedFunction(exports, testCase.functionName)
+
+  if (testCase.expectError) {
+    return runExpectedErrorTestCase(exportedFunction, testCase)
+  }
+
+  return runExpectedValueTestCase(exportedFunction, testCase)
+}
+
 const runTestCase = (
   exports: UserCodeExports,
   testCase: CodeTestCase,
 ): CodeTestCaseResult => {
   try {
     if (isAssertionTestCase(testCase)) {
-      testCase.assert(exports, jestExpect)
-
-      return {
-        name: testCase.name,
-        passed: true,
-      }
+      return runAssertionTestCase(exports, testCase)
     }
 
-    const exportedFunction = getExportedFunction(exports, testCase.functionName)
-
-    if (testCase.expectError) {
-      try {
-        jestExpect(() => exportedFunction(...testCase.args)).toThrow()
-      } catch (error) {
-        return {
-          name: testCase.name,
-          passed: false,
-          expected: 'an error to be thrown',
-          error: getErrorMessage(error),
-        }
-      }
-
-      return {
-        name: testCase.name,
-        passed: true,
-        expected: 'an error to be thrown',
-      }
-    }
-
-    const actual = exportedFunction(...testCase.args)
-
-    try {
-      jestExpect(actual).toEqual(testCase.expected)
-    } catch (error) {
-      return {
-        name: testCase.name,
-        passed: false,
-        expected: testCase.expected,
-        actual,
-        error: getErrorMessage(error),
-      }
-    }
-
-    return {
-      name: testCase.name,
-      passed: true,
-      expected: testCase.expected,
-      actual,
-    }
+    return runFunctionTestCase(exports, testCase)
   } catch (error) {
     return {
       name: testCase.name,
@@ -196,22 +227,17 @@ const runTestCase = (
   }
 }
 
-export const runCodeTests = async (
-  code: string,
-  testCases: CodeTestCase[],
-): Promise<CodeTestRunResult> => {
-  if (testCases.length === 0) {
-    return {
-      status: 'empty',
-      passed: 0,
-      failed: 0,
-      total: 0,
-      cases: [],
-    }
-  }
+const createEmptyRunResult = (): CodeTestRunResult => ({
+  status: 'empty',
+  passed: 0,
+  failed: 0,
+  total: 0,
+  cases: [],
+})
 
-  const exports = await getCodeExports(code)
-  const cases = testCases.map((testCase) => runTestCase(exports, testCase))
+const createCompletedRunResult = (
+  cases: CodeTestCaseResult[],
+): CodeTestRunResult => {
   const passed = cases.filter((testCase) => testCase.passed).length
   const failed = cases.length - passed
 
@@ -222,4 +248,18 @@ export const runCodeTests = async (
     total: cases.length,
     cases,
   }
+}
+
+export const runCodeTests = async (
+  code: string,
+  testCases: CodeTestCase[],
+): Promise<CodeTestRunResult> => {
+  if (testCases.length === 0) {
+    return createEmptyRunResult()
+  }
+
+  const exports = await getCodeExports(code)
+  const cases = testCases.map((testCase) => runTestCase(exports, testCase))
+
+  return createCompletedRunResult(cases)
 }
