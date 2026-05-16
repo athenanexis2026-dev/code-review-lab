@@ -1,14 +1,15 @@
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import CodeMirror from '@uiw/react-codemirror'
-import { useRef, useState, type FormEvent } from 'react'
+import { useRef, useState } from 'react'
 import { codeMirrorBasicSetup, typeScriptExtensions } from './codeMirrorConfig'
 import { CodeTestSummary } from './CodeTestSummary'
-import {
-  runCodeTests,
-  type CodeTestCase,
-  type CodeTestRunResult,
-} from '../utils/codeTestRunner'
+import type { CodeTestCase, CodeTestRunResult } from '../utils/codeTestRunner'
 import { useTaskStats } from '../state/taskStatsContext'
+import {
+  registerSubmittedResult,
+  runTests,
+  submitCode,
+} from './CodeEditorForm.helpers'
 
 export type CodeEditorSubmission = {
   code: string
@@ -24,13 +25,13 @@ type CodeEditorFormProps = {
   onSubmitComplete?: (submission: CodeEditorSubmission) => void
 }
 
-export function CodeEditorForm({
+export const CodeEditorForm = ({
   initialCode = '',
   taskId,
   testCases = [],
   savedSubmission,
   onSubmitComplete,
-}: CodeEditorFormProps) {
+}: CodeEditorFormProps) => {
   const { setTaskStats } = useTaskStats()
   const [code, setCode] = useState(savedSubmission?.code ?? initialCode)
   const [testResult, setTestResult] = useState<CodeTestRunResult | null>(
@@ -48,91 +49,42 @@ export function CodeEditorForm({
     })
   }
 
-  const runTests = async () => {
-    setIsRunningTests(true)
-
-    try {
-      const result = await runCodeTests(code, testCases)
-
-      setTestResult(result)
-      return result
-    } catch (error) {
-      const failedResult: CodeTestRunResult = {
-        status: 'failed',
-        passed: 0,
-        failed: 1,
-        total: 1,
-        cases: [
-          {
-            name: 'Compile and execute TypeScript',
-            passed: false,
-            error: error instanceof Error ? error.message : String(error),
-          },
-        ],
-      }
-
-      setTestResult(failedResult)
-      return failedResult
-    } finally {
-      setIsRunningTests(false)
-    }
-  }
-
-  const registerSubmittedResult = (result: CodeTestRunResult) => {
-    setTaskStats((currentStats) => {
-      const submittedTaskResult: 'passed' | 'failed' =
-        result.status === 'passed' ? 'passed' : 'failed'
-      const taskResultsById = {
-        ...currentStats.taskResultsById,
-        [taskId]: submittedTaskResult,
-      }
-      const passedTestsByTaskId = {
-        ...currentStats.passedTestsByTaskId,
-        [taskId]: result.cases
-          .filter((testCase) => testCase.passed)
-          .map((testCase) => testCase.name),
-      }
-      const submittedResults = Object.values(taskResultsById)
-      const passedTests = Object.values(passedTestsByTaskId).reduce(
-        (total, taskPassedTests) => total + taskPassedTests.length,
-        0,
-      )
-
-      return {
-        ...currentStats,
-        passedTests,
-        completedTasks: submittedResults.length,
-        passedTasks: submittedResults.filter((taskResult) => taskResult === 'passed')
-          .length,
-        failedTasks: submittedResults.filter((taskResult) => taskResult === 'failed')
-          .length,
-        taskResultsById,
-        passedTestsByTaskId,
-      }
+  const runCurrentTests = () => {
+    return runTests({
+      code,
+      testCases,
+      setTestResult,
+      setIsRunningTests,
     })
   }
 
-  const submitCode = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const result = await runTests()
-    const submission = {
-      code,
+  const registerCurrentSubmittedResult = (result: CodeTestRunResult) => {
+    registerSubmittedResult({
+      setTaskStats,
+      taskId,
       result,
-      submittedAt: new Date().toISOString(),
-    }
-
-    registerSubmittedResult(result)
-    onSubmitComplete?.(submission)
-    scrollToTestSummary()
+    })
   }
 
   const runTestsAndScroll = async () => {
-    await runTests()
+    await runCurrentTests()
     scrollToTestSummary()
   }
 
   return (
-    <form className="code-editor-form" onSubmit={submitCode}>
+    <form
+      className="code-editor-form"
+      onSubmit={(event) =>
+        submitCode({
+          event,
+          code,
+          runTests: runCurrentTests,
+          registerSubmittedResult: registerCurrentSubmittedResult,
+          onSubmitComplete,
+          scrollToTestSummary,
+        })
+      }
+    >
       <div className="code-panel__header">
         <h3>Your solution</h3>
         <span>TypeScript</span>
