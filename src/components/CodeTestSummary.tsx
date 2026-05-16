@@ -16,7 +16,11 @@ const formatValue = (value: unknown) => {
   }
 }
 
-export function CodeTestSummary({ result, isRunning }: CodeTestSummaryProps) {
+const getTestCaseStatusClassName = (passed: boolean) => {
+  return `pill ${passed ? 'pill--passed' : 'pill--failed'}`
+}
+
+export const CodeTestSummary = ({ result, isRunning }: CodeTestSummaryProps) => {
   if (isRunning) {
     return (
       <section className="code-test-summary code-test-summary--running">
@@ -48,7 +52,9 @@ export function CodeTestSummary({ result, isRunning }: CodeTestSummaryProps) {
       <ul>
         {result.cases.map((testCase) => (
           <li key={testCase.name}>
-            <span>{testCase.passed ? 'Pass' : 'Fail'}</span>
+            <span className={getTestCaseStatusClassName(testCase.passed)}>
+              {testCase.passed ? 'Pass' : 'Fail'}
+            </span>
             <div>
               <strong>{testCase.name}</strong>
               {testCase.error ? (

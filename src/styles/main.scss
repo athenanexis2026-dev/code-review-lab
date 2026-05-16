@@ -490,10 +490,23 @@ dd {
 
 .code-test-summary li > span {
   min-width: 48px;
-  color: #1f4f7a;
   font-size: 0.74rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.code-test-summary li > .pill {
+  justify-content: center;
+}
+
+.code-test-summary li > .pill--passed {
+  background: #e5f6ef;
+  color: #1f7558;
+}
+
+.code-test-summary li > .pill--failed {
+  background: #fdebe4;
+  color: #a24622;
 }
 
 .code-test-summary li strong,
