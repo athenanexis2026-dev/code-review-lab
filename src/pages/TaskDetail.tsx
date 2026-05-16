@@ -1,9 +1,9 @@
-import { useState } from 'react'
 import { CodeBlock } from '../components/CodeBlock'
 import {
   CodeEditorForm,
   type CodeEditorSubmission,
 } from '../components/CodeEditorForm'
+import { TaskInfoPanel } from '../components/TaskInfoPanel'
 import type { ReviewTask } from '../data/tasks'
 import { taskTestsById } from '../tests/taskTests'
 
@@ -20,11 +20,11 @@ export function TaskDetail({
   onBack,
   onSubmitComplete,
 }: TaskDetailProps) {
-  const [revealedReferenceTaskId, setRevealedReferenceTaskId] = useState<
-    string | null
-  >(null)
-  const showReferenceImplementation =
-    revealedReferenceTaskId === task.id || Boolean(savedSubmission)
+  const taskTests = taskTestsById[task.id] ?? []
+  const showReferenceImplementation = Boolean(savedSubmission)
+  const submitTask = (submission: CodeEditorSubmission) => {
+    onSubmitComplete(task.id, submission)
+  }
 
   return (
     <main className="page-shell">
@@ -41,22 +41,8 @@ export function TaskDetail({
       </section>
 
       <section className="detail-grid">
-        <article className="info-panel">
-          <h2>Expected behavior</h2>
-          <ul>
-            {task.expectedBehavior.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-        <article className="info-panel">
-          <h2>Edge cases</h2>
-          <ul>
-            {task.edgeCases.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
+        <TaskInfoPanel title="Expected behavior" items={task.expectedBehavior} />
+        <TaskInfoPanel title="Edge cases" items={task.edgeCases} />
       </section>
 
       <section className="code-grid code-grid--single">
@@ -67,12 +53,9 @@ export function TaskDetail({
         key={task.id}
         initialCode={task.buggyCode}
         taskId={task.id}
-        testCases={taskTestsById[task.id] ?? []}
+        testCases={taskTests}
         savedSubmission={savedSubmission}
-        onSubmitComplete={(submission) => {
-          setRevealedReferenceTaskId(task.id)
-          onSubmitComplete(task.id, submission)
-        }}
+        onSubmitComplete={submitTask}
       />
 
       {showReferenceImplementation && (
