@@ -1,60 +1,86 @@
 # CodeReview Lab
 
-CodeReview Lab is a lightweight software engineering evaluation dashboard designed to simulate AI trainer workflows. It demonstrates realistic bug identification, test validation, code review feedback, rubric-based scoring, and corrected reference implementations.
+CodeReview Lab is an interactive software engineering evaluation simulator. It presents a small library of realistic TypeScript review tasks, lets a user edit the starter implementation in the browser, runs task-specific tests against the submitted code, tracks dashboard progress, and reveals a corrected reference implementation after submission.
 
-## Tech stack
+The app is built to demonstrate the kind of judgment used in code review, AI trainer workflows, debugging evaluations, edge-case analysis, and test-driven repair tasks.
 
-- React
-- TypeScript
-- Vite
+## What The App Does
+
+- Shows a dashboard of curated SWE evaluation scenarios and live completion metrics.
+- Opens each task into a detail view with expected behavior, edge cases, and buggy starter code.
+- Provides an in-browser TypeScript editor powered by CodeMirror.
+- Transpiles submitted TypeScript in the browser and runs focused test cases against exported functions.
+- Displays passed and failed test results with expected/actual values where available.
+- Saves each task submission in app state while the session is active.
+- Reveals the corrected reference implementation after a task is submitted.
+- Includes a reset action that clears task stats and saved submissions.
+
+## Included Task Scenarios
+
+The current task library includes five scenarios:
+
+- Repair Cart Discount Rounding
+- Design Tests For Profile Merge
+- Refactor Invoice Normalization
+- Repair Shipping Threshold Tax
+- Repair Subscription Proration Rounding
+
+These cover bug fixes, test-writing judgment, and refactoring around practical product logic such as checkout totals, profile updates, invoice imports, shipping thresholds, and subscription billing.
+
+## Tech Stack
+
+- React 19
+- TypeScript 6
+- Vite 8
+- React Router
+- CodeMirror
 - SCSS
-- Mock data only for the MVP
+- Local task data and browser-executed tests
 
-## Features
+## Local Setup
 
-- Dashboard metrics for total tasks, average quality score, bugs identified, tests passed, and review readiness
-- Three realistic software engineering evaluation scenarios
-- Task detail pages with expected behavior, edge cases, starter code, and corrected implementations
-- Evaluation reports with failed cases, reviewer comments, and rubric scores
-- Employer-facing interface designed to demonstrate debugging, testing, code review, and AI evaluation judgment
-
-## Local setup
+Install dependencies:
 
 ```bash
-npm create vite@latest code-review-lab -- --template react-ts
-cd code-review-lab
 npm install
-npm install -D sass
+```
+
+Start the local development server:
+
+```bash
 npm run dev
 ```
 
-## Available scripts
+Build for production:
 
 ```bash
-npm run dev
 npm run build
+```
+
+Preview the production build:
+
+```bash
 npm run preview
+```
+
+Run linting:
+
+```bash
 npm run lint
 ```
 
-## What this demonstrates
+## Project Structure
 
-This project is built for roles involving software engineering task design, AI trainer workflows, and SWE evaluation. It demonstrates the ability to:
+```text
+src/
+  components/        Reusable dashboard, code editor, code block, and test summary UI
+  data/              Task metadata, starter implementations, and reference fixes
+  pages/             Dashboard and task detail routes
+  state/             Session-level task statistics context
+  tests/             Task-specific browser test cases
+  utils/             TypeScript transpilation and test runner utilities
+```
 
-- Design realistic bug-fixing, testing, and refactoring tasks
-- Identify edge cases and failure modes
-- Write clear natural-language task specifications
-- Compare buggy and corrected implementations
-- Build structured rubric-based evaluation artifacts
-- Communicate actionable code review feedback
+## Notes
 
-## Deploy to Vercel
-
-1. Push the project to GitHub.
-2. Import the repository into Vercel.
-3. Use the default Vite settings:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-4. Deploy and share the generated Vercel URL.
-# code-review-lab
-# code-lab
+This project is currently a frontend-only prototype. Task definitions, starter code, reference solutions, and tests are all local to the app. There is no backend, database, authentication layer, or external evaluation service.
