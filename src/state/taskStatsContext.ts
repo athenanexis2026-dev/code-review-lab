@@ -2,6 +2,8 @@ import { createContext, useContext, type Dispatch, type SetStateAction } from 'r
 import { tasks } from '../data/tasks'
 import { taskTestsById } from '../tests/taskTests'
 
+type TaskResult = 'passed' | 'failed'
+
 export type TaskStatsState = {
   tasks: number
   totalTests: number
@@ -9,7 +11,7 @@ export type TaskStatsState = {
   completedTasks: number
   passedTasks: number
   failedTasks: number
-  taskResultsById: Record<string, 'passed' | 'failed'>
+  taskResultsById: Record<string, TaskResult>
   passedTestsByTaskId: Record<string, string[]>
 }
 
@@ -18,15 +20,17 @@ export type TaskStatsContextValue = TaskStatsState & {
   resetTaskStats: () => void
 }
 
-export function createDefaultTaskStats(): TaskStatsState {
-  const totalTests = tasks.reduce(
+const getTotalConfiguredTests = () => {
+  return tasks.reduce(
     (total, task) => total + (taskTestsById[task.id]?.length ?? 0),
     0,
   )
+}
 
+export const createDefaultTaskStats = (): TaskStatsState => {
   return {
     tasks: tasks.length,
-    totalTests,
+    totalTests: getTotalConfiguredTests(),
     passedTests: 0,
     completedTasks: 0,
     passedTasks: 0,
@@ -36,13 +40,11 @@ export function createDefaultTaskStats(): TaskStatsState {
   }
 }
 
-export const defaultTaskStats: TaskStatsState = createDefaultTaskStats()
-
 export const TaskStatsContext = createContext<TaskStatsContextValue | undefined>(
   undefined,
 )
 
-export function useTaskStats() {
+export const useTaskStats = () => {
   const context = useContext(TaskStatsContext)
 
   if (!context) {
