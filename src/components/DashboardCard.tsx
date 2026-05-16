@@ -13,7 +13,8 @@ export const DashboardCard = ({
   detail,
   tone = 'neutral',
 }: DashboardCardProps) => {
-  const cardClassName = `dashboard-card dashboard-card--${tone}`
+  const cardClassName =
+    tone === 'neutral' ? 'dashboard-card' : `dashboard-card dashboard-card--${tone}`
 
   return (
     <article className={cardClassName}>
