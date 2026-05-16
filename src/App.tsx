@@ -1,64 +1,109 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { CodeEditorSubmission } from './components/CodeEditorForm'
 import { tasks } from './data/tasks'
 import { Dashboard } from './pages/Dashboard'
 import { TaskDetail } from './pages/TaskDetail'
 import { useTaskStats } from './state/taskStatsContext'
 
-type View = 'dashboard' | 'task'
-
 const getTaskById = (taskId: string) => {
-  return tasks.find((task) => task.id === taskId) ?? tasks[0]
+  return tasks.find((task) => task.id === taskId) ?? null
 }
 
 const scrollToPageTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    scrollToPageTop()
+  }, [pathname])
+
+  return null
+}
+
 const App = () => {
   const { resetTaskStats } = useTaskStats()
-  const [view, setView] = useState<View>('dashboard')
-  const [selectedTaskId, setSelectedTaskId] = useState(tasks[0].id)
+  const navigate = useNavigate()
   const [taskSubmissionsById, setTaskSubmissionsById] = useState<
     Record<string, CodeEditorSubmission>
   >({})
-  const selectedTask = getTaskById(selectedTaskId)
 
   const openTask = (taskId: string) => {
-    setSelectedTaskId(taskId)
-    setView('task')
-    scrollToPageTop()
+    navigate(`/tasks/${taskId}`)
   }
 
   const resetAppState = () => {
     resetTaskStats()
     setTaskSubmissionsById({})
-    setSelectedTaskId(tasks[0].id)
-    setView('dashboard')
-    scrollToPageTop()
+    navigate('/')
   }
 
-  if (view === 'task') {
-    return (
-      <TaskDetail
-        task={selectedTask}
-        savedSubmission={taskSubmissionsById[selectedTask.id] ?? null}
-        onBack={() => setView('dashboard')}
-        onSubmitComplete={(taskId, submission) => {
-          setTaskSubmissionsById((currentSubmissions) => ({
-            ...currentSubmissions,
-            [taskId]: submission,
-          }))
-        }}
-      />
-    )
+  const taskDetailRoute = (
+    <TaskDetailRoute
+      taskSubmissionsById={taskSubmissionsById}
+      onBack={() => navigate('/')}
+      onSubmitComplete={(taskId, submission) => {
+        setTaskSubmissionsById((currentSubmissions) => ({
+          ...currentSubmissions,
+          [taskId]: submission,
+        }))
+      }}
+    />
+  )
+
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Dashboard
+              tasks={tasks}
+              onOpenTask={openTask}
+              onReset={resetAppState}
+            />
+          }
+        />
+        <Route path="/tasks/:taskId" element={taskDetailRoute} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  )
+}
+
+type TaskDetailRouteProps = {
+  taskSubmissionsById: Record<string, CodeEditorSubmission>
+  onBack: () => void
+  onSubmitComplete: (taskId: string, submission: CodeEditorSubmission) => void
+}
+
+const TaskDetailRoute = ({
+  taskSubmissionsById,
+  onBack,
+  onSubmitComplete,
+}: TaskDetailRouteProps) => {
+  const { taskId } = useParams()
+
+  if (!taskId) {
+    return <Navigate to="/" replace />
+  }
+
+  const task = getTaskById(taskId)
+
+  if (!task) {
+    return <Navigate to="/" replace />
   }
 
   return (
-    <Dashboard
-      tasks={tasks}
-      onOpenTask={openTask}
-      onReset={resetAppState}
+    <TaskDetail
+      task={task}
+      savedSubmission={taskSubmissionsById[task.id] ?? null}
+      onBack={onBack}
+      onSubmitComplete={onSubmitComplete}
     />
   )
 }
