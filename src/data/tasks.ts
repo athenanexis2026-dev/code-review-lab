@@ -8,20 +8,6 @@ export type ReviewTask = {
   edgeCases: string[]
   buggyCode: string
   fixedCode: string
-  testResults: {
-    total: number
-    passed: number
-    failed: number
-    failedCases: string[]
-  }
-  reviewComments: string[]
-  rubric: {
-    correctness: number
-    tests: number
-    edgeCases: number
-    codeQuality: number
-    clarity: number
-  }
 }
 
 export const tasks: ReviewTask[] = [
@@ -76,28 +62,6 @@ export function calculateTotal(items: CartItem[], discount: number) {
   const discountedTotal = subtotal * (1 - discount / 100)
   return Math.round(discountedTotal * 100) / 100
 }`,
-    testResults: {
-      total: 5,
-      passed: 2,
-      failed: 3,
-      failedCases: [
-        'Rounds each discounted line instead of the final total.',
-        'Accepts a negative item price and returns a misleading total.',
-        'Accepts discounts above 100% instead of rejecting invalid input.',
-      ],
-    },
-    reviewComments: [
-      'The reference fix moves rounding to the final calculation, which matches the financial requirement.',
-      'Input validation is explicit and easy to test.',
-      'The tests should include both drift-producing decimals and invalid cart item values.',
-    ],
-    rubric: {
-      correctness: 94,
-      tests: 90,
-      edgeCases: 92,
-      codeQuality: 95,
-      clarity: 93,
-    },
   },
   {
     id: 'profile-merge-tests',
@@ -147,27 +111,6 @@ export function mergeProfile(saved: Profile, update: Partial<Profile>) {
     },
   }
 }`,
-    testResults: {
-      total: 5,
-      passed: 3,
-      failed: 2,
-      failedCases: [
-        'Replacing preferences drops saved channels when only one channel is updated.',
-        'A mutation check is missing for callers that reuse the saved profile.',
-      ],
-    },
-    reviewComments: [
-      'The strongest tests assert object identity and source immutability, not just returned values.',
-      'The final suite covers explicit null separately from undefined, which is the key ambiguity in this task.',
-      'A table-driven test layout would make the edge-case expectations easier to audit.',
-    ],
-    rubric: {
-      correctness: 91,
-      tests: 96,
-      edgeCases: 95,
-      codeQuality: 90,
-      clarity: 92,
-    },
   },
   {
     id: 'invoice-normalization-refactor',
@@ -224,30 +167,6 @@ export function normalizeInvoice(row: Record<string, string>) {
 
   return { ok: true as const, invoice }
 }`,
-    testResults: {
-      total: 5,
-      passed: 0,
-      failed: 5,
-      failedCases: [
-        'Valid rows are returned in the old plain-object shape instead of a discriminated result.',
-        'Timezone conversion changes the calendar date for offset timestamps.',
-        'Comma-formatted totals become NaN.',
-        'Missing IDs are returned as undefined instead of structured validation errors.',
-        'Multiple validation errors are not collected together.',
-      ],
-    },
-    reviewComments: [
-      'The refactor separates validation from formatting without adding unnecessary architecture.',
-      'Returning a discriminated result makes downstream handling safer than throwing in the import loop.',
-      'The remaining risk is vendor-specific date formats, which should be captured in follow-up fixtures.',
-    ],
-    rubric: {
-      correctness: 89,
-      tests: 88,
-      edgeCases: 94,
-      codeQuality: 93,
-      clarity: 91,
-    },
   },
   {
     id: 'shipping-threshold-tax',
@@ -296,28 +215,6 @@ export function normalizeInvoice(row: Record<string, string>) {
 
   return 7.99
 }`,
-    testResults: {
-      total: 5,
-      passed: 2,
-      failed: 3,
-      failedCases: [
-        'Tax-included totals incorrectly qualify below-threshold orders.',
-        'Negative subtotals are accepted instead of rejected.',
-        'Invalid tax rates are accepted and can produce misleading fees.',
-      ],
-    },
-    reviewComments: [
-      'The corrected implementation checks the threshold against the same subtotal shown to shoppers before tax.',
-      'Input validation prevents silent success for negative financial values.',
-      'The tests pin the boundary at just below, exactly at, and invalid inputs.',
-    ],
-    rubric: {
-      correctness: 92,
-      tests: 91,
-      edgeCases: 90,
-      codeQuality: 94,
-      clarity: 93,
-    },
   },
   {
     id: 'subscription-proration-rounding',
@@ -365,27 +262,5 @@ export function normalizeInvoice(row: Record<string, string>) {
 
   return Math.round(proratedCharge * 100) / 100
 }`,
-    testResults: {
-      total: 5,
-      passed: 2,
-      failed: 3,
-      failedCases: [
-        'Rounding the daily rate first changes partial-period charges.',
-        'Impossible day counts are accepted instead of rejected.',
-        'Negative monthly prices are accepted instead of rejected.',
-      ],
-    },
-    reviewComments: [
-      'The fix keeps full precision until the final payable charge.',
-      'Validation guards the billing helper against nonsensical periods and prices.',
-      'The tests cover both rounding drift and business-rule boundaries.',
-    ],
-    rubric: {
-      correctness: 93,
-      tests: 92,
-      edgeCases: 91,
-      codeQuality: 94,
-      clarity: 92,
-    },
   },
 ]
