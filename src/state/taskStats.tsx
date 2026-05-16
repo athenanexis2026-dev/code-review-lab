@@ -1,6 +1,6 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import {
-  defaultTaskStats,
+  createDefaultTaskStats,
   TaskStatsContext,
   type TaskStatsState,
 } from './taskStatsContext'
@@ -10,14 +10,19 @@ type TaskStatsProviderProps = {
 }
 
 export function TaskStatsProvider({ children }: TaskStatsProviderProps) {
-  const [taskStats, setTaskStats] = useState<TaskStatsState>(defaultTaskStats)
+  const [taskStats, setTaskStats] = useState<TaskStatsState>(createDefaultTaskStats)
+
+  const resetTaskStats = useCallback(() => {
+    setTaskStats(createDefaultTaskStats())
+  }, [])
 
   const value = useMemo(
     () => ({
       ...taskStats,
       setTaskStats,
+      resetTaskStats,
     }),
-    [taskStats],
+    [resetTaskStats, taskStats],
   )
 
   return (

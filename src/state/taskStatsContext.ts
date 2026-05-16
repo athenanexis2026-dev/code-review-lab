@@ -13,18 +13,23 @@ export type TaskStatsState = {
 
 export type TaskStatsContextValue = TaskStatsState & {
   setTaskStats: Dispatch<SetStateAction<TaskStatsState>>
+  resetTaskStats: () => void
 }
 
-export const defaultTaskStats: TaskStatsState = {
-  tasks: 5,
-  totalTests: 25,
-  passedTests: 0,
-  completedTasks: 0,
-  passedTasks: 0,
-  failedTasks: 0,
-  taskResultsById: {},
-  passedTestsByTaskId: {},
+export function createDefaultTaskStats(): TaskStatsState {
+  return {
+    tasks: 5,
+    totalTests: 25,
+    passedTests: 0,
+    completedTasks: 0,
+    passedTasks: 0,
+    failedTasks: 0,
+    taskResultsById: {},
+    passedTestsByTaskId: {},
+  }
 }
+
+export const defaultTaskStats: TaskStatsState = createDefaultTaskStats()
 
 export const TaskStatsContext = createContext<TaskStatsContextValue | undefined>(
   undefined,

@@ -65,6 +65,10 @@ button.secondary:hover,
   margin-bottom: 24px;
 }
 
+.detail-header--full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .hero-band > div,
 .detail-header > div {
   padding: 32px;
@@ -115,6 +119,10 @@ button.secondary:hover,
   color: #536273;
   font-size: 1.05rem;
   line-height: 1.65;
+}
+
+.detail-header--full p {
+  max-width: none;
 }
 
 .hero-band aside p {
@@ -196,6 +204,7 @@ dt,
 
 .section-heading {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 22px 24px;
@@ -213,6 +222,28 @@ dt,
 .section-heading span {
   color: #627184;
   font-weight: 700;
+}
+
+.section-heading__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reset-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
 }
 
 .task-list {
@@ -616,6 +647,12 @@ meter::-webkit-meter-optimum-value {
   }
 
   .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .section-heading__actions {
+    width: 100%;
     align-items: flex-start;
     flex-direction: column;
   }

@@ -32,16 +32,12 @@ export function TaskDetail({
         Back to dashboard
       </button>
 
-      <section className="detail-header">
+      <section className="detail-header detail-header--full">
         <div>
           <p className="eyebrow">{task.category}</p>
           <h1>{task.title}</h1>
           <p>{task.description}</p>
         </div>
-        <aside className="status-panel">
-          <span>{task.difficulty}</span>
-          <strong>{task.testResults.failed} failure modes</strong>
-        </aside>
       </section>
 
       <section className="detail-grid">

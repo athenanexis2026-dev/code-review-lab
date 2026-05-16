@@ -7,9 +7,10 @@ import { taskTestsById } from '../tests/taskTests'
 type DashboardProps = {
   tasks: ReviewTask[]
   onOpenTask: (taskId: string) => void
+  onReset: () => void
 }
 
-export function Dashboard({ tasks, onOpenTask }: DashboardProps) {
+export function Dashboard({ tasks, onOpenTask, onReset }: DashboardProps) {
   const taskStats = useTaskStats()
 
   return (
@@ -61,7 +62,24 @@ export function Dashboard({ tasks, onOpenTask }: DashboardProps) {
             <p className="eyebrow">Task library</p>
             <h2>Evaluation scenarios</h2>
           </div>
-          <span>{taskStats.tasks} active tasks</span>
+          <div className="section-heading__actions">
+            <span>{taskStats.tasks} active tasks</span>
+            <button
+              type="button"
+              className="secondary reset-button"
+              onClick={onReset}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                focusable="false"
+              >
+                <path d="M3 12a9 9 0 1 0 3-6.7" />
+                <path d="M3 4v6h6" />
+              </svg>
+              Reset
+            </button>
+          </div>
         </div>
 
         <div className="task-list">
