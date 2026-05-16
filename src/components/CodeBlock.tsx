@@ -10,37 +10,43 @@ type CodeBlockProps = {
   allowCopy?: boolean
 }
 
-export function CodeBlock({
+const COPY_RESET_DELAY_MS = 1600
+
+// Fallback copy method for browsers that don't support the Clipboard API
+const copyWithFallback = (code: string) => {
+  const codeTextarea = document.createElement('textarea')
+  codeTextarea.value = code
+  codeTextarea.setAttribute('readonly', '')
+  codeTextarea.style.position = 'fixed'
+  codeTextarea.style.opacity = '0'
+  document.body.append(codeTextarea)
+  codeTextarea.select()
+  document.execCommand('copy')
+  codeTextarea.remove()
+}
+
+export const CodeBlock = ({
   title,
   code,
   language = 'TypeScript',
   allowCopy = false,
-}: CodeBlockProps) {
+}: CodeBlockProps) => {
   const [copyLabel, setCopyLabel] = useState('Copy')
+  const codePanelClassName = `code-panel${allowCopy ? ' code-panel--copyable' : ''}`
 
   const copyCode = async () => {
     try {
       await navigator.clipboard.writeText(code)
-      setCopyLabel('Copied')
     } catch {
-      const codeTextarea = document.createElement('textarea')
-
-      codeTextarea.value = code
-      codeTextarea.setAttribute('readonly', '')
-      codeTextarea.style.position = 'fixed'
-      codeTextarea.style.opacity = '0'
-      document.body.append(codeTextarea)
-      codeTextarea.select()
-      document.execCommand('copy')
-      codeTextarea.remove()
-      setCopyLabel('Copied')
+      copyWithFallback(code)
     }
 
-    window.setTimeout(() => setCopyLabel('Copy'), 1600)
+    setCopyLabel('Copied')
+    window.setTimeout(() => setCopyLabel('Copy'), COPY_RESET_DELAY_MS)
   }
 
   return (
-    <section className={`code-panel${allowCopy ? ' code-panel--copyable' : ''}`}>
+    <section className={codePanelClassName}>
       <div className="code-panel__header">
         <h3>{title}</h3>
         <div className="code-panel__tools">
