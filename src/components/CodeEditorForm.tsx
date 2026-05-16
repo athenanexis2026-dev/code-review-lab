@@ -1,7 +1,7 @@
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import CodeMirror from '@uiw/react-codemirror'
 import { useRef, useState } from 'react'
-import { codeMirrorBasicSetup, typeScriptExtensions } from './codeMirrorConfig'
+import { codeMirrorBasicSetup, typeScriptExtensions } from './config/codeMirrorConfig'
 import { CodeTestSummary } from './CodeTestSummary'
 import type { CodeTestCase, CodeTestRunResult } from '../utils/codeTestRunner'
 import { useTaskStats } from '../state/taskStatsContext'
@@ -9,7 +9,7 @@ import {
   registerSubmittedResult,
   runTests,
   submitCode,
-} from './CodeEditorForm.helpers'
+} from './helperFunctions/CodeEditorForm.helpers'
 
 export type CodeEditorSubmission = {
   code: string

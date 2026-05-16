@@ -1,7 +1,7 @@
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import CodeMirror from '@uiw/react-codemirror'
 import { useState } from 'react'
-import { codeMirrorBasicSetup, typeScriptExtensions } from './codeMirrorConfig'
+import { codeMirrorBasicSetup, typeScriptExtensions } from './config/codeMirrorConfig'
 
 type CodeBlockProps = {
   title: string

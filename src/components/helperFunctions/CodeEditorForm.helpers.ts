@@ -1,11 +1,11 @@
 import type { Dispatch, FormEvent, SetStateAction } from 'react'
-import type { TaskStatsState } from '../state/taskStatsContext'
+import type { TaskStatsState } from '../../state/taskStatsContext'
 import {
   runCodeTests,
   type CodeTestCase,
   type CodeTestRunResult,
-} from '../utils/codeTestRunner'
-import type { CodeEditorSubmission } from './CodeEditorForm'
+} from '../../utils/codeTestRunner'
+import type { CodeEditorSubmission } from '../CodeEditorForm'
 
 type RunTestsParams = {
   code: string
