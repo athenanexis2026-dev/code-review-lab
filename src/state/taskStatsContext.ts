@@ -1,4 +1,6 @@
 import { createContext, useContext, type Dispatch, type SetStateAction } from 'react'
+import { tasks } from '../data/tasks'
+import { taskTestsById } from '../tests/taskTests'
 
 export type TaskStatsState = {
   tasks: number
@@ -17,9 +19,14 @@ export type TaskStatsContextValue = TaskStatsState & {
 }
 
 export function createDefaultTaskStats(): TaskStatsState {
+  const totalTests = tasks.reduce(
+    (total, task) => total + (taskTestsById[task.id]?.length ?? 0),
+    0,
+  )
+
   return {
-    tasks: 5,
-    totalTests: 25,
+    tasks: tasks.length,
+    totalTests,
     passedTests: 0,
     completedTasks: 0,
     passedTasks: 0,
